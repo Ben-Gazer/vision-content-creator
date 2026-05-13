@@ -27,6 +27,14 @@ const VARIANTS = [
     qrCta: 'Book now',
     footerTag: 'Padel Plus Membership',
   },
+  {
+    id: 'ad-lifestyle',
+    headline: ['Show Up.', 'Level Up.'],
+    body: 'Every session makes you sharper. Join Padel Plus and play more of the game you love',
+    image: 'assets/brand-rally.jpg',
+    qrCta: 'Start playing',
+    footerTag: 'Padel Plus Membership',
+  },
 ];
 
 const RemotionRoot = () =>

@@ -8,12 +8,14 @@
     "render:price": "remotion render src/Root.jsx ad-price out/ad-price.mp4",
     "render:community": "remotion render src/Root.jsx ad-community out/ad-community.mp4",
     "render:urgency": "remotion render src/Root.jsx ad-urgency out/ad-urgency.mp4",
-    "render:all": "npm run render:price && npm run render:community && npm run render:urgency",
+    "render:lifestyle": "remotion render src/Root.jsx ad-lifestyle out/ad-lifestyle.mp4",
+    "render:all": "npm run render:price && npm run render:community && npm run render:urgency && npm run render:lifestyle",
     "deploy:site": "node --env-file=.env deploy/deploy-site.js",
     "deploy:function": "node --env-file=.env deploy/deploy-function.js",
     "directus:bootstrap": "node --env-file=.env directus/bootstrap.js",
     "directus:seed:padel-pass": "node --env-file=.env directus/seed-padel-pass.js",
-    "directus:cleanup:padel-pass": "node --env-file=.env directus/cleanup-padel-pass.js"
+    "directus:cleanup:padel-pass": "node --env-file=.env directus/cleanup-padel-pass.js",
+    "directus:seed:campaign-test": "node --env-file=.env directus/seed-campaign-test.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",
