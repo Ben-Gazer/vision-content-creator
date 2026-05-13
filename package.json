@@ -10,7 +10,9 @@
     "render:urgency": "remotion render src/Root.jsx ad-urgency out/ad-urgency.mp4",
     "render:all": "npm run render:price && npm run render:community && npm run render:urgency",
     "deploy:site": "node deploy/deploy-site.js",
-    "deploy:function": "node deploy/deploy-function.js"
+    "deploy:function": "node deploy/deploy-function.js",
+    "directus:bootstrap": "node directus/bootstrap.js",
+    "directus:seed": "node directus/seed-padel-pass.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",

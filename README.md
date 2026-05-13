@@ -211,11 +211,49 @@ Both commands print the values you need for `.env`.
 
 ### 3. Directus (Railway)
 
-1. Deploy Directus via the [Railway template](https://railway.app/template/directus)
-2. Create the collections above (schema can be imported from `directus/schema.json` when available)
-3. Upload brand assets (logos, images, fonts) via Directus Files
-4. Add a Directus webhook: on `campaigns` update → POST to your Make.com webhook URL
-5. Set CORS to allow requests from the Remotion Lambda region
+#### 3a. Deploy
+
+1. Go to [railway.app/template/directus](https://railway.app/template/directus) and deploy
+2. Once running, open the Railway dashboard → your Directus service → **Variables** and add:
+   ```
+   CORS_ENABLED=true
+   CORS_ORIGIN=*
+   ```
+3. Note the public URL (e.g. `https://your-project.up.railway.app`) — add it to `.env` as `DIRECTUS_URL`
+
+#### 3b. Get an admin token
+
+1. Open your Directus URL → log in as admin
+2. Go to **Settings → Access Policies → Administrator → Static Tokens** → generate a token
+3. Add it to `.env` as `DIRECTUS_TOKEN`
+
+#### 3c. Bootstrap schema
+
+Creates all collections, fields, and relations in one pass. Safe to re-run.
+
+```bash
+node directus/bootstrap.js
+```
+
+#### 3d. Seed Padel Pass
+
+Uploads all brand assets (logo + three images) to Directus Files and creates the client record.
+
+```bash
+node directus/seed-padel-pass.js
+```
+
+Prints the Directus file IDs — keep these handy for creating variant records.
+
+#### 3e. Add webhook
+
+In Directus admin: **Settings → Webhooks → Create**
+
+- **Name:** Trigger Make.com on campaign status change
+- **Method:** POST
+- **URL:** your Make.com webhook URL (from Scenario A setup)
+- **Collections:** campaigns
+- **Actions:** update
 
 ### 4. NowSignage
 
