@@ -14,7 +14,7 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const BASE = process.env.DIRECTUS_URL;
+const BASE = process.env.DIRECTUS_URL?.replace(/\/$/, '');
 const TOKEN = process.env.DIRECTUS_TOKEN;
 
 if (!BASE || !TOKEN) {

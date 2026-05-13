@@ -7,7 +7,7 @@
  *   node directus/bootstrap.js
  */
 
-const BASE = process.env.DIRECTUS_URL;
+const BASE = process.env.DIRECTUS_URL?.replace(/\/$/, '');
 const TOKEN = process.env.DIRECTUS_TOKEN;
 
 if (!BASE || !TOKEN) {
