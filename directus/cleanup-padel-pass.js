@@ -39,7 +39,15 @@ for (const f of allFolders) {
   }
 }
 
-for (const id of foldersToDelete) {
+// Delete children before parents to avoid FK constraint violations
+const folderMap = Object.fromEntries(allFolders.map(f => [f.id, f]));
+const toDelete = foldersToDelete.sort((a, b) => {
+  const aHasParent = foldersToDelete.includes(folderMap[a]?.parent);
+  const bHasParent = foldersToDelete.includes(folderMap[b]?.parent);
+  return bHasParent - aHasParent; // children (whose parent is also being deleted) come first
+});
+
+for (const id of toDelete) {
   await api('DELETE', `/folders/${id}`);
   console.log(`  deleted folder: ${id}`);
 }
