@@ -60,7 +60,7 @@ async function createRelation(rel) {
 const uuid = (field = 'id') => ({
   field,
   type: 'uuid',
-  meta: { hidden: true, readonly: true, interface: 'input' },
+  meta: { hidden: true, readonly: true, interface: 'input', special: ['uuid'] },
   schema: { is_primary_key: true, has_auto_increment: false },
 });
 

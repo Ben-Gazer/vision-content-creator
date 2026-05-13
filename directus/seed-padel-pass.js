@@ -60,14 +60,21 @@ async function getOrCreateFolder(name, parent = null) {
 // ─── File upload ──────────────────────────────────────────────────────────────
 
 async function uploadFile(localPath, { title, folder, tags }) {
+  // Skip if a file with this title already exists
+  const existing = await api('GET', `/files?filter[title][_eq]=${encodeURIComponent(title)}&limit=1`);
+  if (existing.length > 0) {
+    console.log(`  exists: ${title}`);
+    // Ensure folder + tags are up to date
+    await api('PATCH', `/files/${existing[0].id}`, { folder, tags });
+    return existing[0].id;
+  }
+
   const filename = path.basename(localPath);
   const ext = filename.split('.').pop().toLowerCase();
   const mime = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png' }[ext] ?? 'application/octet-stream';
 
   const form = new FormData();
   form.append('title', title);
-  form.append('folder', folder);
-  form.append('tags', JSON.stringify(tags));
   form.append('file', new Blob([await readFile(localPath)], { type: mime }), filename);
 
   const res = await fetch(`${BASE}/files`, {
@@ -76,9 +83,14 @@ async function uploadFile(localPath, { title, folder, tags }) {
     body: form,
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(`Upload ${filename} → ${res.status}: ${data?.errors?.[0]?.message}`);
+  if (!res.ok) throw new Error(`Upload ${filename} → ${res.status}: ${JSON.stringify(data?.errors)}`);
+
+  const fileId = data.data.id;
+  // Assign folder and tags via PATCH — more reliable than FormData fields
+  await api('PATCH', `/files/${fileId}`, { folder, tags });
+
   console.log(`  ✓ ${title}`);
-  return data.data.id;
+  return fileId;
 }
 
 // ─── Folder structure ─────────────────────────────────────────────────────────
