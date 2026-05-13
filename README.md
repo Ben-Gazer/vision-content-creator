@@ -235,15 +235,9 @@ Creates all collections, fields, and relations in one pass. Safe to re-run.
 node directus/bootstrap.js
 ```
 
-#### 3d. Seed Padel Pass
+#### 3d. Add client data
 
-Uploads all brand assets (logo + three images) to Directus Files and creates the client record.
-
-```bash
-node directus/seed-padel-pass.js
-```
-
-Prints the Directus file IDs — keep these handy for creating variant records.
+Add clients, upload brand assets (logo + campaign images), and create campaigns and variants through the Directus admin UI.
 
 #### 3e. Add webhook
 
