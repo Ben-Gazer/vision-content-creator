@@ -114,17 +114,17 @@ const [logoId, rallyId, teamFourId, handshakeId] = await Promise.all([
   uploadFile(path.join(ROOT, 'assets/brand-rally.jpg'), {
     title:  'Match Action',
     folder: photoFolderId,
-    tags:   ['padel-pass', 'brand', 'colour-lifestyle', 'match-action'],
+    tags:   ['padel-pass', 'brand', 'match-action'],
   }),
   uploadFile(path.join(ROOT, 'assets/brand-team-four.jpg'), {
     title:  'Team Hero',
     folder: photoFolderId,
-    tags:   ['padel-pass', 'brand', 'colour-lifestyle', 'team-hero'],
+    tags:   ['padel-pass', 'brand', 'team-hero'],
   }),
   uploadFile(path.join(ROOT, 'assets/brand-handshake.jpg'), {
     title:  'Sportsmanship',
     folder: photoFolderId,
-    tags:   ['padel-pass', 'brand', 'colour-lifestyle', 'sportsmanship'],
+    tags:   ['padel-pass', 'brand', 'sportsmanship'],
   }),
 ]);
 

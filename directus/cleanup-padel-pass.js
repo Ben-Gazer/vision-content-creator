@@ -54,28 +54,26 @@ for (const id of toDelete) {
 
 console.log(`  kept ${seen.size} folders, removed ${foldersToDelete.length} duplicates`);
 
-// ─── Deduplicate files ────────────────────────────────────────────────────────
+// ─── Delete all files in Padel Pass folders ───────────────────────────────────
 
-console.log('\nCleaning up duplicate files…');
+console.log('\nDeleting all Padel Pass files…');
 
-const allFiles = await api('GET', '/files?limit=-1&fields=id,title,uploaded_on');
+// Collect all folder IDs in the Padel Pass tree
+const remainingFolders = await api('GET', '/folders?limit=-1');
+const padelPassRoot = remainingFolders.find(f => f.name === 'Padel Pass' && !f.parent);
+const padelFolderIds = padelPassRoot
+  ? remainingFolders.filter(f => f.id === padelPassRoot.id || f.parent === padelPassRoot.id).map(f => f.id)
+  : [];
 
-const seenFiles = new Map();
-const filesToDelete = [];
-
-for (const f of allFiles) {
-  if (!f.title) continue;
-  if (seenFiles.has(f.title)) {
-    filesToDelete.push(f.id);
-  } else {
-    seenFiles.set(f.title, f.id);
+if (padelFolderIds.length === 0) {
+  console.log('  no Padel Pass folders found — skipping file cleanup');
+} else {
+  const allFiles = await api('GET', `/files?limit=-1&fields=id,title,folder&filter[folder][_in]=${padelFolderIds.join(',')}`);
+  for (const f of allFiles) {
+    await api('DELETE', `/files/${f.id}`);
+    console.log(`  deleted: ${f.title}`);
   }
+  console.log(`  removed ${allFiles.length} files`);
 }
 
-for (const id of filesToDelete) {
-  await api('DELETE', `/files/${id}`);
-  console.log(`  deleted file: ${id}`);
-}
-
-console.log(`  kept ${seenFiles.size} files, removed ${filesToDelete.length} duplicates`);
 console.log('\n✓ Cleanup complete. Run npm run directus:seed:padel-pass to re-seed.');
