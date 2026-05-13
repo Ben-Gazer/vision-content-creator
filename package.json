@@ -1,0 +1,24 @@
+{
+  "name": "vision-content-creator",
+  "version": "1.0.0",
+  "description": "Padel Pass display ad — animated MP4 export via Remotion",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/Root.jsx",
+    "render:price": "remotion render src/Root.jsx ad-price out/ad-price.mp4",
+    "render:community": "remotion render src/Root.jsx ad-community out/ad-community.mp4",
+    "render:urgency": "remotion render src/Root.jsx ad-urgency out/ad-urgency.mp4",
+    "render:all": "npm run render:price && npm run render:community && npm run render:urgency",
+    "deploy:site": "node deploy/deploy-site.js",
+    "deploy:function": "node deploy/deploy-function.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1045.0",
+    "@aws-sdk/s3-request-presigner": "^3.1045.0",
+    "@remotion/cli": "4.0.290",
+    "@remotion/lambda": "^4.0.460",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.290"
+  }
+}

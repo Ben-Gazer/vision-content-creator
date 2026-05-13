@@ -1,0 +1,41 @@
+/* ============================================================
+   Padel Pass — Core tokens
+   Colours & typography for the design system.
+   ============================================================ */
+
+@font-face { font-family: "Poppins"; font-style: normal; font-weight: 600; font-display: swap; src: url("fonts/Poppins-SemiBold.ttf") format("truetype"); }
+@font-face { font-family: "Poppins"; font-style: italic; font-weight: 600; font-display: swap; src: url("fonts/Poppins-SemiBoldItalic.ttf") format("truetype"); }
+@font-face { font-family: "Poppins"; font-style: normal; font-weight: 700; font-display: swap; src: url("fonts/Poppins-Bold.ttf") format("truetype"); }
+@font-face { font-family: "Poppins"; font-style: italic; font-weight: 700; font-display: swap; src: url("fonts/Poppins-BoldItalic.ttf") format("truetype"); }
+@font-face { font-family: "Poppins"; font-style: normal; font-weight: 800; font-display: swap; src: url("fonts/Poppins-ExtraBold.ttf") format("truetype"); }
+@font-face { font-family: "Poppins"; font-style: italic; font-weight: 800; font-display: swap; src: url("fonts/Poppins-ExtraBoldItalic.ttf") format("truetype"); }
+
+:root {
+  /* Brand colours */
+  --pp-green:       #73BB12;
+  --pp-green-ink:   #5a930e;
+  --pp-black:       #000000;
+  --pp-white:       #ffffff;
+  --pp-ink:         #333333;
+  --pp-charcoal:    #1a1a1a;
+  --court-ball:     #d4ff3a;
+
+  /* Type */
+  --ff-display: "Poppins", "Helvetica Neue", Arial, sans-serif;
+  --ff-body:    "Poppins", "Helvetica Neue", Arial, sans-serif;
+
+  /* Radii */
+  --r-pill:    999px;
+  --r-card:    12px;
+  --r-card-lg: 24px;
+
+  /* Spacing */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --d-fast: 140ms;
+  --d-med:  280ms;
+  --d-slow: 600ms;
+}
