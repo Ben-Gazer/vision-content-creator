@@ -84,7 +84,7 @@ console.log('\nSetting up folder structure…');
 
 const rootFolderId  = await getOrCreateFolder('Padel Pass');
 const logoFolderId  = await getOrCreateFolder('Logo', rootFolderId);
-const photoFolderId = await getOrCreateFolder('Brand Photography', rootFolderId);
+const photoFolderId = await getOrCreateFolder('Brand — Colour Lifestyle', rootFolderId);
 
 // ─── Upload assets ────────────────────────────────────────────────────────────
 
@@ -94,22 +94,22 @@ const [logoId, rallyId, teamFourId, handshakeId] = await Promise.all([
   uploadFile(path.join(ROOT, 'assets/logo-padel-pass-stacked-on-dark.png'), {
     title:  'Logo — Stacked, Dark Background',
     folder: logoFolderId,
-    tags:   ['padel-pass', 'brand', 'logo', 'identity', 'stacked', 'dark'],
+    tags:   ['padel-pass', 'brand', 'logo', 'identity'],
   }),
   uploadFile(path.join(ROOT, 'assets/brand-rally.jpg'), {
-    title:  'Brand Photography — Rally',
+    title:  'Brand — Colour Lifestyle: Match Action',
     folder: photoFolderId,
-    tags:   ['padel-pass', 'brand', 'photography', 'action', 'rally', 'in-play'],
+    tags:   ['padel-pass', 'brand', 'colour-lifestyle', 'match-action'],
   }),
   uploadFile(path.join(ROOT, 'assets/brand-team-four.jpg'), {
-    title:  'Brand Photography — Team Four',
+    title:  'Brand — Colour Lifestyle: Team Hero',
     folder: photoFolderId,
-    tags:   ['padel-pass', 'brand', 'photography', 'team', 'group', 'community'],
+    tags:   ['padel-pass', 'brand', 'colour-lifestyle', 'team-hero'],
   }),
   uploadFile(path.join(ROOT, 'assets/brand-handshake.jpg'), {
-    title:  'Brand Photography — Handshake',
+    title:  'Brand — Colour Lifestyle: Sportsmanship',
     folder: photoFolderId,
-    tags:   ['padel-pass', 'brand', 'photography', 'social', 'handshake', 'community'],
+    tags:   ['padel-pass', 'brand', 'colour-lifestyle', 'sportsmanship'],
   }),
 ]);
 
