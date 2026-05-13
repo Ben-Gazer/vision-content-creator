@@ -17,9 +17,10 @@ async function api(method, path, body) {
     headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
     body: body ? JSON.stringify(body) : undefined,
   });
-  const data = await res.json();
+  const text = await res.text();
+  const data = text ? JSON.parse(text) : null;
   if (!res.ok) throw new Error(`${method} ${path} → ${res.status}: ${JSON.stringify(data?.errors)}`);
-  return data.data;
+  return data?.data ?? null;
 }
 
 const allFolders = await api('GET', '/folders?limit=-1');
