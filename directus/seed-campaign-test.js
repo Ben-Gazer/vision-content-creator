@@ -51,7 +51,8 @@ const imageIds = {
 
 // ─── Campaign ─────────────────────────────────────────────────────────────────
 
-const CAMPAIGN_NAME = 'Test Campaign — All Variants';
+const CAMPAIGN_NAME = 'Padel Plus Membership Drive — May 2026';
+const CAMPAIGN_OBJECTIVE = 'Increase Padel Plus membership sign-ups by driving awareness of the value, community, and convenience benefits across in-venue display screens.';
 
 const existing = await api('GET', `/items/campaigns?filter[name][_eq]=${encodeURIComponent(CAMPAIGN_NAME)}&limit=1`);
 let campaignId;
@@ -61,10 +62,11 @@ if (existing.length > 0) {
   console.log(`\nCampaign already exists: ${campaignId}`);
 } else {
   const campaign = await api('POST', '/items/campaigns', {
-    id:     randomUUID(),
-    client: client.id,
-    name:   CAMPAIGN_NAME,
-    status: 'draft',
+    id:        randomUUID(),
+    client:    client.id,
+    name:      CAMPAIGN_NAME,
+    objective: CAMPAIGN_OBJECTIVE,
+    status:    'draft',
   });
   campaignId = campaign.id;
   console.log(`\nCreated campaign: ${campaignId}`);

@@ -179,6 +179,7 @@ const campaignStatuses = [
 const campaignFields = [
   fk('client', 'clients'),
   str('name', 'Campaign name', { required: true }),
+  text('objective', 'Objective', { note: 'What outcome is this campaign driving? e.g. Drive Padel Plus membership sign-ups' }),
   select('status', campaignStatuses, 'Status', 'draft'),
 ];
 for (const f of campaignFields) await addField('campaigns', f);

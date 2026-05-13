@@ -95,11 +95,15 @@ vision-content-creator/
 | logo | file | Directus Files relation |
 
 ### `campaigns`
+
+A campaign represents a **specific outcome** — what the creative is trying to achieve. Variants are creative permutations (headline, image, copy) tested against each other to find what best drives that outcome.
+
 | Field | Type | Notes |
 |-------|------|-------|
 | client | relation → clients | |
-| name | string | |
-| status | enum | `draft` → `ready_to_render` → `rendering` → `rendered` → `approved` |
+| name | string | e.g. `Padel Plus Membership Drive — May 2026` |
+| objective | text | The outcome being driven — visible to reviewers |
+| status | enum | `draft` → `ready_to_render` → `rendering` → `rendered` → `approved` → `published` |
 
 ### `variants`
 | Field | Type | Notes |
