@@ -11,7 +11,8 @@
     "render:all": "npm run render:price && npm run render:community && npm run render:urgency",
     "deploy:site": "node --env-file=.env deploy/deploy-site.js",
     "deploy:function": "node --env-file=.env deploy/deploy-function.js",
-    "directus:bootstrap": "node --env-file=.env directus/bootstrap.js"
+    "directus:bootstrap": "node --env-file=.env directus/bootstrap.js",
+    "directus:seed:padel-pass": "node --env-file=.env directus/seed-padel-pass.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",
