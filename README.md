@@ -10,32 +10,52 @@ Agency-scale pipeline for generating animated MP4 display ads from a composable 
 | Workflow orchestration | [Make.com](https://make.com) |
 | Cloud rendering | [Remotion Lambda](https://remotion.dev/lambda) |
 | Asset storage | AWS S3 |
+| Digital signage delivery | [NowSignage](https://nowsignage.com) |
 | Compositions | React + [Remotion](https://remotion.dev) |
 
 ## Architecture
 
 ```
-Directus (Railway)                Make.com Scenario
-  ┌──────────────────┐             ┌───────────────────────────────────────┐
-  │  clients         │             │ 1. Trigger: Directus webhook           │
-  │  campaigns       │──webhook──▶ │    (campaign.status = ready_to_render) │
-  │  variants        │             │ 2. Fetch variants + file URLs from CMS │
-  │  renders         │             │ 3. POST to Render API                  │
-  │  Files (assets)  │ ◀──update── │ 4. Write render results to CMS        │
-  └──────────────────┘             │ 5. Send approval notification          │
-           │                       └───────────────────────────────────────┘
-   Directus CDN                               │
-   (image URLs)                       Render API (AWS Lambda)
-                                               │
-                                      Remotion Lambda
-                                      ┌────────────────────┐
-                                      │ renderMediaOnLambda │
-                                      │ per variant,        │
-                                      │ in parallel         │
-                                      └────────────────────┘
-                                               │
-                                          S3 Bucket
-                                      (MP4s + presigned URLs)
+Directus (Railway)
+  ┌──────────────────────────────────────────────────────────┐
+  │  clients  │  campaigns  │  variants  │  renders           │
+  └──────────────────────────────────────────────────────────┘
+       │  webhook (status changes)
+       ▼
+  Make.com
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  Scenario A — Render                                                 │
+  │  Trigger: campaign.status = ready_to_render                          │
+  │  1. Fetch variants + Directus CDN image URLs                         │
+  │  2. POST to Render API → Remotion Lambda renders in parallel         │
+  │  3. Write S3 keys + presigned URLs to renders collection             │
+  │  4. Set campaign.status = rendered                                    │
+  │  5. Send approval notification (presigned URLs for preview)           │
+  ├─────────────────────────────────────────────────────────────────────┤
+  │  Scenario B — Publish to NowSignage                                  │
+  │  Trigger: campaign.status = approved                                  │
+  │  1. Fetch render records (presigned URLs) for campaign               │
+  │  2. For each render: GET MP4 from S3 → POST to NowSignage media lib  │
+  │  3. Write nowsignage_asset_id back to renders collection             │
+  │  4. Set campaign.status = published                                   │
+  └─────────────────────────────────────────────────────────────────────┘
+       │ Scenario A                         │ Scenario B
+       ▼                                    ▼
+  Render API (AWS Lambda)            NowSignage Media Library
+       │                             POST /profiles/{id}/assets/videos
+       ▼
+  Remotion Lambda
+  (renderMediaOnLambda per variant)
+       │
+       ▼
+  S3 Bucket (MP4s + presigned URLs)
+```
+
+### Campaign lifecycle
+
+```
+draft → ready_to_render → rendering → rendered → approved → published
+                               ↑ Scenario A          ↑ Scenario B
 ```
 
 ## Repository Structure
@@ -101,8 +121,11 @@ vision-content-creator/
 | presigned_url | string | |
 | expires_at | datetime | 7-day TTL |
 | rendered_at | datetime | |
+| nowsignage_asset_id | string | written by Scenario B after upload |
 
-## Make.com Scenario
+## Make.com Scenarios
+
+### Scenario A — Render
 
 **Trigger:** Directus webhook → `campaigns.status` updated to `ready_to_render`
 
@@ -112,7 +135,26 @@ vision-content-creator/
 4. `PATCH /items/campaigns/{id}` → status: `rendering`
 5. On response: `POST /items/renders` per variant with S3 key + presigned URL
 6. `PATCH /items/campaigns/{id}` → status: `rendered`
-7. Send approval notification (Slack / email) with presigned URLs
+7. Send approval notification (Slack / email) with presigned URLs for preview
+
+### Scenario B — Publish to NowSignage
+
+**Trigger:** Directus webhook → `campaigns.status` updated to `approved`
+
+1. `GET /items/renders?filter[variant][campaign][_eq]={campaignId}&fields=*`  
+   Fetch all render records for the campaign
+2. For each render:
+   - `GET {presigned_url}` — download MP4 binary from S3
+   - `POST https://api.nowsignage.com/v1/profiles/{NOWSIGNAGE_PROFILE_ID}/assets/videos`  
+     Multipart upload with bearer token auth; receive `asset.id` in response
+   - `PATCH /items/renders/{id}` → `nowsignage_asset_id: asset.id`
+3. `PATCH /items/campaigns/{id}` → status: `published`
+4. Send confirmation notification with NowSignage asset IDs
+
+**NowSignage auth header:**
+```
+Authorization: Bearer {NOWSIGNAGE_API_TOKEN}
+```
 
 ### Render API payload
 
@@ -154,6 +196,7 @@ You will need:
 - AWS credentials with permissions for Lambda, S3, and CloudWatch Logs
 - A Remotion Lambda function and site URL (see step 2)
 - An S3 bucket for rendered MP4 output
+- A NowSignage API token and profile ID (Settings → API in the NowSignage dashboard)
 
 ### 2. Deploy Remotion Lambda
 
@@ -174,9 +217,18 @@ Both commands print the values you need for `.env`.
 4. Add a Directus webhook: on `campaigns` update → POST to your Make.com webhook URL
 5. Set CORS to allow requests from the Remotion Lambda region
 
-### 4. Make.com
+### 4. NowSignage
 
-Build the scenario described above. The Render API endpoint is your deployed `api/render.js` Lambda function URL.
+1. Log into your NowSignage account
+2. Go to **Settings → API** and generate an API token
+3. Note your profile ID from the URL (`/profiles/{id}/`)
+4. Add both to `.env` as `NOWSIGNAGE_API_TOKEN` and `NOWSIGNAGE_PROFILE_ID`
+
+### 5. Make.com
+
+Build both scenarios described above:
+- **Scenario A** — Render API endpoint is your deployed `api/render.js` Lambda function URL
+- **Scenario B** — Uses NowSignage API directly; no Lambda involved
 
 ## Local Preview
 
