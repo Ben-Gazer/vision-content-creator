@@ -33,25 +33,28 @@ async function api(method, path, body) {
     body: body ? JSON.stringify(body) : undefined,
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(`${method} ${path} → ${res.status}: ${data?.errors?.[0]?.message}`);
+  if (!res.ok) throw new Error(`${method} ${path} → ${res.status}: ${JSON.stringify(data?.errors)}`);
   return data.data;
 }
 
 // ─── Folders ──────────────────────────────────────────────────────────────────
 
 async function getOrCreateFolder(name, parent = null) {
-  const filter = parent
-    ? `/folders?filter[name][_eq]=${encodeURIComponent(name)}&filter[parent][_eq]=${parent}&limit=1`
-    : `/folders?filter[name][_eq]=${encodeURIComponent(name)}&filter[parent][_null]=true&limit=1`;
-
-  const existing = await api('GET', filter);
-  if (existing.length > 0) {
-    console.log(`  folder exists: ${name}`);
-    return existing[0].id;
+  try {
+    const folder = await api('POST', '/folders', { name, ...(parent ? { parent } : {}) });
+    console.log(`  ✓ Created folder: ${name}`);
+    return folder.id;
+  } catch (err) {
+    // Already exists — look it up by name (+ parent if set)
+    let url = `/folders?filter[name][_eq]=${encodeURIComponent(name)}&limit=1`;
+    if (parent) url += `&filter[parent][_eq]=${parent}`;
+    const existing = await api('GET', url);
+    if (existing.length > 0) {
+      console.log(`  folder exists: ${name}`);
+      return existing[0].id;
+    }
+    throw err;
   }
-  const folder = await api('POST', '/folders', { name, ...(parent ? { parent } : {}) });
-  console.log(`  ✓ Created folder: ${name}`);
-  return folder.id;
 }
 
 // ─── File upload ──────────────────────────────────────────────────────────────
